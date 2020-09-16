@@ -1,0 +1,18 @@
+##################################### Spam detection ###########################################
+
+# delete all null@ mails instantly
+if (/^To: null@yourdomain\.com/:h)
+{
+	to "/dev/null"
+}
+
+# Process SPAM headers
+if ( /^X-Rspamd-Bar: \+{$SPAM_SCORE,}$/)
+{
+  # This mail is - most probably - spam. Deliver it to the spam folder. Do NOT forward it to external addresses.
+  MAILDIR="$MAILDIR/.SPAM"
+  cc "$MAILDIR";
+  # mark as read
+  `find "$MAILDIR/new/" -mindepth 1 -maxdepth 1 -type f -printf '%f\0' | xargs -0 -I {} mv "$MAILDIR/new/{}" "$MAILDIR/cur/{}:2,S"`
+  exit
+}

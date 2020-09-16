@@ -1,0 +1,56 @@
+# The maximum DSPAM score that will be accepted
+SPAM_SCORE=5
+FILTER_DIR="$HOME/mailfilter"
+# This is the mail box where we want to deliver
+MAILDIR="$HOME/users/info"
+# Shorthand for later filtering
+ANYADDR="(From|To|Cc|Bcc|Reply-To|X-Original-To|Delivered-To)"
+FALLBACK_ADDRESS="some-address-to-forward-to-if-everything-fails@yourdomain.com"
+
+# Import environment variables, (re)create recipient mail address (useful if recipient is on BCC)
+import EXT
+import HOST
+RECIPIENT="$EXT@$HOST"
+
+# Insert X-Delivered-to header (we don't automatically get one with mailfilter delivery)
+xfilter "reformail -a'X-Delivered-to: $RECIPIENT'"
+
+logfile "$FILTER_DIR/mailfilter.log"
+
+# check if we're called from a .qmail-EXT instead of .qmail
+import EXT
+if ( $EXT )
+{
+  # does a vmailmgr user named $EXT exist?
+  # if yes, deliver mail to his Maildir instead
+  VUSER_DIRECTORY = `dumpvuser $EXT | grep '^Directory' | awk '{ print $2 }'`
+  if ( $VUSER_DIRECTORY )
+  {
+    MAILDIR="$HOME/$VUSER_DIRECTORY"
+  }
+  else
+  {
+    # no VUSER_DIRECTORY found, so let's check for a catchall
+    CATCHALL_TARGET = `dumpvuser + | grep '^Forward: ' | awk '{ print $2 }'`
+    if ( $CATCHALL_TARGET )
+    {
+      # there is a catchall mailbox, retrieve its directory
+      VUSER_DIRECTORY = `dumpvuser $CATCHALL_TARGET | grep '^Directory' | awk '{ print $2 }'`
+      if ( $VUSER_DIRECTORY )
+      {
+        MAILDIR="$HOME/$VUSER_DIRECTORY"
+      }
+    }
+  }
+}
+
+# Start the filtering here and include as many files as you want, they will be executed in correct order.
+exception {
+  include $FILTER_DIR/filter/01_spam.maildrop
+  include $FILTER_DIR/filter/02_after_spam.maildrop
+  include $FILTER_DIR/filter/03_custom_filters.maildrop
+  include $FILTER_DIR/filter/04_default.maildrop
+}
+
+log "Normal filtering aborted with an exception for the following mail: "
+to "$MAILDIR"

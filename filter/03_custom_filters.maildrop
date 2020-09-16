@@ -1,0 +1,29 @@
+# Put some custom filters in here. For example, you want to mark specific addresses immediately as read, exclude them from being put into the mobile folder
+# or move them to spam directly. You can use every mail header for filtering.
+
+###############################################################################
+##### Very important stuff for mobile phone
+if (/^$ANYADDR: very-important-stuff@mydomain\.com.*/:h)
+{
+	cc "$MAILDIR/.Mobile"
+	to "$MAILDIR/.Very-important-stuff"
+}
+
+###############################################################################
+##### Filter generic newsletter stuff
+
+if (/(unsubscribe|abbestellen|abmelden)/:b \
+		|| /<a[^>]*opt(-)?out[^>]*>/:b \
+		|| /^From:.*no-?reply.*/:h \
+		|| /^Subject: .*((N|n)ewsletter|(A|a)ngebote?).*/:h)
+{
+	to "$MAILDIR/.Newsletter"
+}
+
+###############################################################################
+##### Backup address
+if (/^$ANYADDR: backup@mydomain\.com.*/:h )
+{
+  # Don't put them into the mobile folder, don't want to receive them on the road
+	to "$MAILDIR/.Newsletter.Backup"
+}

@@ -1,0 +1,8 @@
+log "Going into default mode - receiver: $RECIPIENT"
+
+# Create matching maildir and deliver mail.
+TO_DIR=`$FILTER_DIR/scripts/add_maildir_folder.sh "$RECIPIENT" "$MAILDIR"`
+log "Computed delivery folder: '$TO_DIR' in maildir '$MAILDIR'"
+
+cc "$MAILDIR/.Mobile"
+to "$MAILDIR/$TO_DIR"

@@ -1,0 +1,25 @@
+# SPAM filtering already done, so only ham here
+
+# extract possible forwards from vmailmgr config
+VUSER_FORWARD = `dumpvuser $EXT | grep '^Forward: ' | awk '{ print $2 }' | tr '\n' ' '`
+if ( $VUSER_FORWARD )
+{
+  cc "!$VUSER_FORWARD"
+}
+
+# Check if this is a vmailmgr user that probably has mailbox delivery disabled
+VUSER_HAS_MAILBOX = `dumpvuser $EXT | grep '^Has-Mailbox: ' | awk '{ print $2 }'`
+VUSER_MAILBOX_ENABLED = `dumpvuser $EXT | grep '^Mailbox-Enabled: ' | awk '{ print $2 }'`
+if ( "$VUSER_HAS_MAILBOX" eq "false" || "$VUSER_MAILBOX_ENABLED" eq "false" )
+{
+  log "Local mailbox delivery explicitly disabled for this address"
+  to "!$FALLBACK_ADDRESS"
+  # "to" implies "exit", the "!" claims the following to be an email address.
+  # More info: http://www.courier-mta.org/maildropfilter.html#to
+}
+
+# Save a copy to the archive, just to be sure.
+ARCHIVE="$MAILDIR/.Archiv"
+cc $ARCHIVE
+# mark as read
+`find "$ARCHIVE/new/" -mindepth 1 -maxdepth 1 -type f -printf '%f\0' | xargs -0 -I {} mv "$ARCHIVE/new/{}" "$ARCHIVE/cur/{}:2,S"`
