@@ -57,7 +57,7 @@ If everything works, you
 - always who sold your e-mail data and where spam came from
 - are able to create your folder structure just by making up new email addresses
 
-#IMPORTANT!
+# IMPORTANT!
 I'm not a fully professional bash developer, nor am I familiar enough with mail servers to tell you if that's a good idea. I've been using and developing those scripts for
  ~4 years now and they did a pretty good job most of the time. That doesn't mean there could not be edge cases or bugs that I didn't think of. Use it at your own  risk.
  If this somehow helped you, feel invited to tell me or even contribute ideas or implementations. Have fun filtering your mails!   
