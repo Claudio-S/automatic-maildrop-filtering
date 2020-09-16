@@ -1,0 +1,2 @@
+# Off we go, right into the filter chain!
+| maildrop $HOME/mailfilter/filter/00_init.maildrop

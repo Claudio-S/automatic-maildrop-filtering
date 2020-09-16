@@ -42,12 +42,13 @@ If you receiver another mail for `foo.baz@yourdomain.com`, it will be sorted in 
 
 
 ## What are the files good for?
-- `pull-repo.sh`: pulls the repo, sets permissions right and executes `dos2unix` on all filters to avoid encoding errors.
+- `pull-repo.sh`: Just a shorthand to pull the repo, set permissions right and execute `dos2unix` on all filters to avoid encoding errors.
 - `check_folder_structure.sh`: Created a maildir using `maildirmake` for every line thats in the folder cache file (one way sync)
 - `add_maildir_folder.sh`: Does the above mentioned logic to split up the address and create the necessary folder structure
 - `*.maildrop`: Those are the filters executed by maildrop in order 
 - `folder_structure.sample`: That's just to give you an idea how the folder cache looks like. If you mention hard-coded filters in the filter files, you have to take care that
  those folders are inside the folder structure and already exist before trying to deliver into them.
+- `.qmail` you can symlink this to your "original" catch-all `.qmail` file, it will start the filter chain.
 
 <br>
 
